@@ -2,12 +2,54 @@ import pymysql
 import dbutils.pooled_db
 import pymysql.cursors
 import pymysql.connections
-from . import interfaces
+# from . 
+import interfaces
 from typing import Callable
 
 
+class ReturnedSqlType:
+    """
+    a class for managing the returned data from the databse.
+    """
+
+
+    class _Column(str):
+        pass
+
+
+    class _Row(dict[_Column, ]):
+        pass
+
+
+    def __init__(self, sqlres: list[_Row], rowcount: int, close: Callable) -> None:
+        """
+        store the data.
+        
+        <code>sqlres: list of dictionarys:</code> the data itself.<br>
+        sqlres is build like this:
+        [row1, row2, ...]
+        each row is:
+        {column1: value, column2: value, ...}<br>
+        <code>rowcount: integer:</code> the rowcount.<br>
+        <code>close: callable:</code> a disconnect function.
+        
+        <code>return: None. </code>
+        """
+        self.sqlres = sqlres
+        self.rowcount = rowcount
+        self.close = close
+
+
+    def __enter__(self):
+        return self
+
+
+    def __exit__(self, *exc) -> None:
+        self.close()
+
+
 class ConnectionPool(interfaces.ConnectionPoolInterface):
-    def __init__(self, host: str, user: str, password: str, database: str, port: int) -> None:
+    def __init__(self, password: str, user: str = 'root', host: str = 'localhost', port: int = 3306, database: str = None) -> None:
         """
         a class for managing the connection pool.
 
@@ -31,37 +73,6 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
             port=port,
             cursorclass=pymysql.cursors.DictCursor
         )
-
-
-    class _ReturnedSql:
-        """
-        a class for managing the returned data from the databse.
-        """
-        def __init__(self, sqlres: list[dict], rowcount: int, close: Callable) -> None:
-            """
-            store the data.
-            
-            <code>sqlres: list of dictionarys:</code> the data itself.<br>
-            sqlres is build like this:
-            [row1, row2, ...]
-            each row is:
-            {column1: value, column2: value, ...}<br>
-            <code>rowcount: integer:</code> the rowcount.<br>
-            <code>close: callable:</code> a disconnect function.
-            
-            <code>return: None. </code>
-            """
-            self.sqlres = sqlres
-            self.rowcount = rowcount
-            self.close = close
-
-
-        def __enter__(self):
-            return self
-
-
-        def __exit__(self, *exc) -> None:
-            self.close()
 
 
     def _connect(self) -> (pymysql.connections.Connection):
@@ -103,7 +114,7 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         return r
 
 
-    def select(self, sql: str) -> _ReturnedSql:
+    def select(self, sql: str) -> ReturnedSqlType:
         """
         select data from the database.
 
@@ -116,5 +127,5 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         with conn.cursor() as cursor:
             cursor: pymysql.cursors.DictCursor
             cursor.execute(sql)
-            result = self._ReturnedSql(cursor.fetchall(), cursor.rowcount, lambda: self._disconnect(conn))
+            result = ReturnedSqlType(cursor.fetchall(), cursor.rowcount, lambda: self._disconnect(conn))
             return result
