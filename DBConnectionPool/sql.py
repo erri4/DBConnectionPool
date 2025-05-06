@@ -1,4 +1,4 @@
-from database import ConnectionPool
+from .database import ConnectionPool
 import argparse
 import pymysql
 
