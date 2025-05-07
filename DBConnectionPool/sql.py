@@ -16,7 +16,7 @@ def runsql(conn: ConnectionPool):
                             head += column + ' | ' if not i == len(r.sqlres.columns) - 1 else ''
                             print(column, end=' | ' if not i == len(r.sqlres.columns) - 1 else '')
                         print()
-                        for char in range(len(head) + 5):
+                        for _ in range(len(head) + 5):
                             print('-', end='')
                         print()
                         for ro in range(r.sqlres.length):
