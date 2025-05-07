@@ -7,25 +7,32 @@ def runsql(conn: ConnectionPool):
     sql = None
     while not sql == 'exit':
         if sql:
-            if 'select'in sql:
-                with conn.select(sql) as r:
-                    head = ''
-                    for i in range(len(r.sqlres[0].keys())):
-                        column = list(r.sqlres[0].keys())[i]
-                        head += column + ' | ' if not i == len(r.sqlres[0].keys()) - 1 else ''
-                        print(column, end=' | ' if not i == len(r.sqlres[0].keys()) - 1 else '')
-                    print()
-                    for char in range(len(head) + 5):
-                        print('-', end='')
-                    print()
-                    for row in r.sqlres:
-                        for i in range(len(row.keys())):
-                            column = list(row.keys())[i]
-                            print(row[column], end=' | ' if not i == len(row.keys()) - 1 else '')
+            try:
+                if 'select' in sql:
+                    with conn.select(sql) as r:
+                        head = ''
+                        for i in range(len(r.sqlres.columns)):
+                            column = r.sqlres.columns[i]
+                            head += column + ' | ' if not i == len(r.sqlres.columns) - 1 else ''
+                            print(column, end=' | ' if not i == len(r.sqlres.columns) - 1 else '')
                         print()
-            else:
-                r = conn.runsql(sql)
-                print(f'Rowcount: {r}')
+                        for char in range(len(head) + 5):
+                            print('-', end='')
+                        print()
+                        for ro in range(r.sqlres.length):
+                            row = r.sqlres.get(row=ro)
+                            for i in range(len(r.sqlres.columns)):
+                                column = r.sqlres.columns[i]
+                                print(row[column], end=' | ' if not i == len(r.sqlres.columns) - 1 else '')
+                            print()
+                        print(f'{r.rowcount} row(s) returned')
+                else:
+                    r = conn.runsql(sql)
+                    if sql[:4] == 'use ' and len(sql[4:].split(' ')) == 1:
+                        r = conn.runsql(sql)
+                    print(f'{r} row(s) changed')
+            except Exception as e:
+                print(f'Error: {e}')
         sql = input('>>>')
 
 

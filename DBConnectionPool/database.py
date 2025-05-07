@@ -3,7 +3,47 @@ import dbutils.pooled_db
 import pymysql.cursors
 import pymysql.connections
 from . import interfaces
-from typing import Callable
+from typing import Callable, Any
+
+
+class _Column(str):
+    pass
+
+
+class _Row(dict[_Column, ]):
+    pass
+
+
+class Table:
+    """
+    a class for managing the table data.
+    """
+
+
+    def __init__(self, data: list[_Row], columns: list[str]) -> None:
+        """
+        store the data.
+
+        <code>data: list[_Row]:</code> the data of the table.<br>
+        <code>columns: list of strings:</code> the columns of the table.
+
+        <code>return: None. </code>
+        """
+
+        self.data = data
+        self.length = len(data)
+        self.columns = columns
+
+    
+    def get(self, row: int, column: str = None) -> dict[_Column, ] | Any | None:
+        """
+        get the data of the given column.
+
+        <code>column: string:</code> the column to get.
+
+        <code>return: list: </code> the data of the column.
+        """
+        return self.data[row][column] if column in self.data[row] else None if column else self.data[row] if row < len(self.data) else None
 
 
 class ReturnedSqlType:
@@ -12,15 +52,7 @@ class ReturnedSqlType:
     """
 
 
-    class _Column(str):
-        pass
-
-
-    class _Row(dict[_Column, ]):
-        pass
-
-
-    def __init__(self, sqlres: list[_Row], rowcount: int, close: Callable) -> None:
+    def __init__(self, sqlres: list[_Row], rowcount: int, close: Callable, columns: list[str]) -> None:
         """
         store the data.
         
@@ -30,11 +62,12 @@ class ReturnedSqlType:
         each row is:
         {column1: value, column2: value, ...}<br>
         <code>rowcount: integer:</code> the rowcount.<br>
-        <code>close: callable:</code> a disconnect function.
+        <code>close: callable:</code> a disconnect function.<br>
+        <code>columns: list of strings:</code> the columns of the table.<br>
         
         <code>return: None. </code>
         """
-        self.sqlres = sqlres
+        self.sqlres = Table(sqlres, columns)
         self.rowcount = rowcount
         self.close = close
 
@@ -126,5 +159,6 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         with conn.cursor() as cursor:
             cursor: pymysql.cursors.DictCursor
             cursor.execute(sql)
-            result = ReturnedSqlType(cursor.fetchall(), cursor.rowcount, lambda: self._disconnect(conn))
+            columns =[desc[0] for desc in cursor.description] if cursor.description else []
+            result = ReturnedSqlType(cursor.fetchall(), cursor.rowcount, lambda: self._disconnect(conn), columns)
             return result
