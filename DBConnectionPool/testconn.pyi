@@ -1,3 +1,0 @@
-from .database import ConnectionPool as ConnectionPool
-
-def main() -> None: ...

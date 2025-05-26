@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "DBConnectionPool"
-version = "0.1.8"
+version = "0.1.9"
 description = "A simple connection pool library."
 requires-python = ">=3.8"
 authors = [
@@ -19,9 +19,3 @@ sql = "DBConnectionPool.sql:main"
 [project.urls]
 "Homepage" = "https://github.com/erri4/DBConnectionPool"
 "Bug Tracker" = "https://github.com/erri4/DBConnectionPool/issues"
-
-[tool.setuptools]
-packages = ["DBConnectionPool"]
-
-[tool.setuptools.package-data]
-DBConnectionPool = ["py.typed"]
