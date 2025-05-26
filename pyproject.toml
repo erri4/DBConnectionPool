@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "DBConnectionPool"
-version = "0.1.9"
+version = "0.2.0"
 description = "A simple connection pool library."
 requires-python = ">=3.8"
 authors = [
   { name="Erri4" }
 ]
-dependencies = ["PyMySQL", "dbutils", "types-PyMySQL"]
+dependencies = ["PyMySQL", "dbutils"]
 
 [project.scripts]
 testconn = "DBConnectionPool.testconn:main"
