@@ -19,3 +19,9 @@ sql = "DBConnectionPool.sql:main"
 [project.urls]
 "Homepage" = "https://github.com/erri4/DBConnectionPool"
 "Bug Tracker" = "https://github.com/erri4/DBConnectionPool/issues"
+
+[tool.setuptools]
+packages = ["DBConnectionPool"]
+
+[tool.setuptools.package-data]
+DBConnectionPool = ["py.typed"]
