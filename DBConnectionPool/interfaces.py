@@ -1,5 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Any
+from typing import Any
+
+
+class disconnect_t:
+    def __call__(self):
+        pass
 
 
 class _Column(str):
@@ -48,7 +53,7 @@ class ReturnedSqlType:
     """
 
 
-    def __init__(self, sqlres: list[_Row], rowcount: int, close: Callable, columns: list[str]) -> None:
+    def __init__(self, sqlres: list[_Row], rowcount: int, close: disconnect_t, columns: list[str]) -> None:
         """
         store the data.
         

@@ -83,6 +83,6 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         with conn.cursor() as crsor:
             crsor: pymysql.cursors.DictCursor
             crsor.execute(sql)
-            columns =[desc[0] for desc in crsor.description] if crsor.description else []
+            columns = [desc[0] for desc in crsor.description] if crsor.description else []
             result = interfaces.ReturnedSqlType(crsor.fetchall(), crsor.rowcount, lambda: self._disconnect(conn), columns)
             return result
