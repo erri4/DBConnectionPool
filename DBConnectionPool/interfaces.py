@@ -1,10 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Callable
 
 
-class disconnect_t:
-    def __call__(self):
-        pass
+disconnect_t = Callable[[], None]
 
 
 class _Column(str):
