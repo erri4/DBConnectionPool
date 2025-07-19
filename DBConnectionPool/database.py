@@ -62,8 +62,7 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         """
         r = 0
         conn = self._connect()
-        with conn.cursor() as cursor:
-            cursor: pymysql.cursors.DictCursor
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute(sql, placeholders)
             conn.commit()
             r = cursor.rowcount
@@ -80,8 +79,7 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         <code>return: _ReturnedSql: </code> an instance of the _ReturnedSql class containing the rowcount, the data itself, and a disconnect function.
         """
         conn = self._connect()
-        with conn.cursor() as crsor:
-            crsor: pymysql.cursors.DictCursor
+        with conn.cursor(pymysql.cursors.DictCursor) as crsor:
             crsor.execute(sql)
             columns = [desc[0] for desc in crsor.description] if crsor.description else []
             result = interfaces.ReturnedSqlType(crsor.fetchall(), crsor.rowcount, lambda: self._disconnect(conn), columns)

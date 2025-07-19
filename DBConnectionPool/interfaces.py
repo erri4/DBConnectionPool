@@ -1,16 +1,11 @@
+import pymysql
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from typing import Any, Callable, TypeAlias
 
 
-disconnect_t = Callable[[], None]
-
-
-class _Column(str):
-    pass
-
-
-class _Row(dict[_Column, Any]):
-    pass
+disconnect_t: TypeAlias = Callable[[], None]
+_Column: TypeAlias = str
+_Row: TypeAlias = dict[_Column, Any]
 
 
 class Table:
@@ -19,7 +14,7 @@ class Table:
     """
 
 
-    def __init__(self, data: list[_Row], columns: list[str]) -> None:
+    def __init__(self, data: tuple[_Row, ...], columns: list[str]) -> None:
         """
         store the data.
 
@@ -34,7 +29,7 @@ class Table:
         self.columns = columns
 
     
-    def get(self, row: int, column: str | None = None) -> dict[_Column, Any] | Any | None:
+    def get(self, row: int, column: _Column | None = None) -> dict[_Column, Any] | Any | None:
         """
         get the data of the given column.
 
@@ -89,7 +84,7 @@ class ConnectionPoolInterface(ABC):
 
 
     @abstractmethod
-    def _disconnect(self):
+    def _disconnect(self: pymysql.connections.Connection):
         pass
 
     
