@@ -1,6 +1,6 @@
 [project]
 name = "DBConnectionPool"
-version = "0.2.6"
+version = "0.2.7"
 description = "A simple connection pool library."
 requires-python = ">=3.8"
 authors = [
