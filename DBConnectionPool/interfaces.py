@@ -24,7 +24,7 @@ class Table:
         <code>return: None. </code>
         """
 
-        self.data = data
+        self._data = data
         self.length = len(data)
         self.columns = columns
 
@@ -37,7 +37,7 @@ class Table:
 
         <code>return: list: </code> the data of the column.
         """
-        return self.data[row][column] if column in self.data[row] else None if column else self.data[row] if row < len(self.data) else None
+        return self._data[row][column] if column in self._data[row] else None if column else self._data[row] if row < len(self._data) else None
 
 
 class ReturnedSqlType:
