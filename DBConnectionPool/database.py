@@ -1,7 +1,7 @@
 import pymysql
-import dbutils.pooled_db
 import pymysql.cursors
 import pymysql.connections
+import dbutils.pooled_db # type: ignore
 from . import interfaces
 
 
@@ -70,7 +70,7 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         return r
 
 
-    def select(self, sql: str) -> interfaces.ReturnedSqlType:
+    def select(self, sql: str) -> interfaces.ReturnedSql:
         """
         select data from the database.
 
@@ -82,5 +82,5 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         with conn.cursor(pymysql.cursors.DictCursor) as crsor:
             crsor.execute(sql)
             columns = [desc[0] for desc in crsor.description] if crsor.description else []
-            result = interfaces.ReturnedSqlType(crsor.fetchall(), crsor.rowcount, lambda: self._disconnect(conn), columns)
+            result = interfaces.ReturnedSql(crsor.fetchall(), crsor.rowcount, lambda: self._disconnect(conn), columns)
             return result

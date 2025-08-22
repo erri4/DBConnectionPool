@@ -40,13 +40,13 @@ class Table:
         return self._data[row][column] if column in self._data[row] else None if column else self._data[row] if row < len(self._data) else None
 
 
-class ReturnedSqlType:
+class ReturnedSql:
     """
     a class for managing the returned data from the databse.
     """
 
 
-    def __init__(self, sqlres: list[_Row], rowcount: int, close: disconnect_t, columns: list[str]) -> None:
+    def __init__(self, sqlres: tuple[_Row, ...], rowcount: int, close: disconnect_t, columns: list[str]) -> None:
         """
         store the data.
         
@@ -84,7 +84,7 @@ class ConnectionPoolInterface(ABC):
 
 
     @abstractmethod
-    def _disconnect(self: pymysql.connections.Connection):
+    def _disconnect(self ,conn: pymysql.connections.Connection):
         pass
 
     
@@ -94,5 +94,5 @@ class ConnectionPoolInterface(ABC):
 
 
     @abstractmethod
-    def select(self, sql: str) -> ReturnedSqlType:
+    def select(self, sql: str) -> ReturnedSql:
         pass
