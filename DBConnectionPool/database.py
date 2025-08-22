@@ -1,12 +1,19 @@
 import pymysql
 import pymysql.cursors
 import pymysql.connections
-import dbutils.pooled_db # type: ignore
+import dbutils.pooled_db  # type: ignore
 from . import interfaces
 
 
 class ConnectionPool(interfaces.ConnectionPoolInterface):
-    def __init__(self, password: str, user: str = 'root', host: str = 'localhost', port: int = 3306, database: str | None = None) -> None:
+    def __init__(
+        self,
+        password: str,
+        user: str = "root",
+        host: str = "localhost",
+        port: int = 3306,
+        database: str | None = None,
+    ) -> None:
         """
         a class for managing the connection pool.
 
@@ -28,16 +35,14 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
             password=password,
             database=database,
             port=port,
-            cursorclass=pymysql.cursors.DictCursor
+            cursorclass=pymysql.cursors.DictCursor,
         )
 
-
-    def _connect(self) -> (pymysql.connections.Connection):
+    def _connect(self) -> pymysql.connections.Connection:
         """
         get a connection from the connection pool.
         """
         return self.pool.connection()
-
 
     def _disconnect(self, conn: pymysql.connections.Connection):
         """
@@ -49,7 +54,6 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         """
         if conn:
             conn.close()
-
 
     def runsql(self, sql: str, placeholders: tuple | None = None) -> int:
         """
@@ -69,7 +73,6 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         self._disconnect(conn)
         return r
 
-
     def select(self, sql: str) -> interfaces.ReturnedSql:
         """
         select data from the database.
@@ -81,6 +84,13 @@ class ConnectionPool(interfaces.ConnectionPoolInterface):
         conn = self._connect()
         with conn.cursor(pymysql.cursors.DictCursor) as crsor:
             crsor.execute(sql)
-            columns = [desc[0] for desc in crsor.description] if crsor.description else []
-            result = interfaces.ReturnedSql(crsor.fetchall(), crsor.rowcount, lambda: self._disconnect(conn), columns)
+            columns = (
+                [desc[0] for desc in crsor.description] if crsor.description else []
+            )
+            result = interfaces.ReturnedSql(
+                crsor.fetchall(),
+                crsor.rowcount,
+                lambda: self._disconnect(conn),
+                columns,
+            )
             return result
